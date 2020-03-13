@@ -13,7 +13,7 @@
         },
         "adminUsername": {
             "type": "string",
-            "defaultValue": "qmajohn",
+            "defaultValue": "cenx",
             "metadata": {
                 "description": "Username for the Virtual Machine."
             }
@@ -52,7 +52,7 @@
         "NICNameVM2": "VM2-NIC",
         "PIPNameVM2": "VM2-PIP",
         "NSGName": "NSG",
-        "galleries_CENX_SIG_externalid": "/subscriptions/a2e63101-6274-4190-a9a0-b238157993cb/resourceGroups/CENX-SIG/providers/Microsoft.Compute/galleries/CENX_SIG",
+        "galleries_CENX_SIG_externalid": "/subscriptions/8b3b4b55-8760-464e-b1f6-841ffc802635/resourceGroups/SharedImageGalleryEastUS_RG/providers/Microsoft.Compute/galleries/SharedImageGalleryEastUS",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -218,11 +218,11 @@
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "Standard_B1s"
+                    "vmSize": "Standard_E8_v3"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CentOS7LVMImg2')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/toolsgeneric-cx01')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
@@ -263,11 +263,11 @@
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "Standard_B1s"
+                    "vmSize": "Standard_E8_v3"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CentOS7LVMImg2')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/toolsgeneric-cx01')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
