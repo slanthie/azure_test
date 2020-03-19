@@ -49,7 +49,7 @@
         "NICNameVM1": "VM1-NIC",
         "PIPNameVM1": "VM1-PIP",
         "NSGName": "NSG",
-        "galleries_CENX_SIG_externalid": "/subscriptions/a2e63101-6274-4190-a9a0-b238157993cb/resourceGroups/CENX-SIG/providers/Microsoft.Compute/galleries/CENX_SIG",
+        "galleries_CENX_SIG_externalid": "/subscriptions/8b3b4b55-8760-464e-b1f6-841ffc802635/resourceGroups/SharedImageGalleryEastUS_RG/providers/Microsoft.Compute/galleries/SharedImageGalleryEastUS",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -250,7 +250,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CentOS7LVMImg2')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/toolsgeneric-cx01')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
@@ -341,7 +341,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/MatsJ66/AzureDevTestTemplates/master/Scripts/script.sh"
+                            "https://raw.githubusercontent.com/slanthie/AzureDevTestTemplates/master/Scripts/script.sh"
                         ]
                     },
                     "commandToExecute": {
