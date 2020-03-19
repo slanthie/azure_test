@@ -246,7 +246,7 @@
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "Standard_B1s"
+                    "vmSize": "Standard_E8_v3"
                 },
                 "storageProfile": {
                     "imageReference": {
