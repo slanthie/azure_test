@@ -89,6 +89,57 @@
                             "sourceAddressPrefixes": [],
                             "destinationAddressPrefixes": []
                         }
+                    },
+                    {
+                        "name": "CENX_Ports",
+                        "properties": {
+                            "description": "8080 UI\n443 https\n9443 https for nifi\n22 for ssh\n9990 wildfly\n4040 spark\n8983 solr\n9042\n7777 old nifi\n8088 datomic console",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 310,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "443",
+                                "9443",
+                                "22",
+                                "9990",
+                                "4040",
+                                "9042",
+                                "7777",
+                                "8088",
+                                "8983",
+                                "8881",
+                                "4009"
+                            ],
+                            "sourceAddressPrefixes": [
+                                "24.114.83.103",
+                                "70.53.103.157",
+                                "24.212.221.141",
+                                "192.75.88.130",
+                                "99.124.231.231",
+                                "49.207.55.97",
+                                "125.16.128.122",
+                                "106.206.60.3",
+                                "223.227.14.122",
+                                "27.59.56.22",
+                                "122.171.170.97",
+                                "106.206.114.211",
+                                "106.206.106.87",
+                                "106.206.121.45",
+                                "106.206.110.177",
+                                "27.59.91.157",
+                                "122.171.165.133",
+                                "67.84.31.160",
+                                "129.192.79.10",
+                                "198.84.220.184",
+                                "142.184.84.246",
+                                "142.118.109.170"
+                            ],
+                            "destinationAddressPrefixes": []
+                        }
                     }
                 ]
             }
