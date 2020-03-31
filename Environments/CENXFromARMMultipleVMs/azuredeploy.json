@@ -273,7 +273,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/toolsgeneric-cx01')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CenxUIvm1of2')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
@@ -318,7 +318,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/toolsgeneric-cx01')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CenxUIvm2of2')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
