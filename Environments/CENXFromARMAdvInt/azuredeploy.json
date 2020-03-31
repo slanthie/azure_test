@@ -51,7 +51,7 @@
         "VMName2": "VM2",
         "NICNameVM2": "VM2-NIC",
         "PIPNameVM2": "VM2-PIP",
-        "VMName2": "VM3",
+        "VMName3": "VM3",
         "NICNameVM3": "VM3-NIC",
         "PIPNameVM3": "VM3-PIP",
         "NSGName": "NSG",
