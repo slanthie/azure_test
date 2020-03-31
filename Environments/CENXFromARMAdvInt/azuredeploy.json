@@ -52,8 +52,8 @@
         "NICNameVM2": "VM2-NIC",
         "PIPNameVM2": "VM2-PIP",
         "VMName2": "VM3",
-        "NICNameVM2": "VM3-NIC",
-        "PIPNameVM2": "VM3-PIP",
+        "NICNameVM3": "VM3-NIC",
+        "PIPNameVM3": "VM3-PIP",
         "NSGName": "NSG",
         "galleries_CENX_SIG_externalid": "/subscriptions/8b3b4b55-8760-464e-b1f6-841ffc802635/resourceGroups/SharedImageGalleryEastUS_RG/providers/Microsoft.Compute/galleries/SharedImageGalleryEastUS",
         "linuxConfiguration": {
