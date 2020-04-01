@@ -385,7 +385,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/toolsgeneric-cx01')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/LandingAdvInt_image')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
