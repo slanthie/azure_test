@@ -431,7 +431,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAddress": "10.0.19.4",
-                            "privateIPAllocationMethod": "Dynamic",
+                            "privateIPAllocationMethod": "Static",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM1')))]"
                             },
@@ -473,7 +473,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAddress": "10.0.19.5",
-                            "privateIPAllocationMethod": "Dynamic",
+                            "privateIPAllocationMethod": "Static",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM2')))]"
                             },
@@ -515,7 +515,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAddress": "10.0.19.6",
-                            "privateIPAllocationMethod": "Dynamic",
+                            "privateIPAllocationMethod": "Static",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM3')))]"
                             },
