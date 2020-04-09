@@ -1,0 +1,633 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "numberOfEnvironments": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 10,
+            "metadata": {
+              "description": "Number of environments to deploy."
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "cenx",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "authenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "allowedValues": [
+                "sshPublicKey",
+                "password"
+            ],
+            "metadata": {
+                "description": "Type of authentication to use on the Virtual Machine. Password is recommended."
+            }
+        },
+        "adminPasswordOrKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SSH Key or password for the Virtual Machine. Password is recommended."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+            "description": "Location for all resources. Leave default unless good reason."
+            }
+        }
+    },
+    "variables": {
+        "vNetName": "VNet",
+        "VMName1": "tools",
+        "NICNameVM1": "tools-NIC",
+        "PIPNameVM1": "tools-PIP",
+        "VMName2": "system",
+        "NICNameVM2": "system-NIC",
+        "PIPNameVM2": "system-PIP",
+        "VMName3": "landing",
+        "NICNameVM3": "landing-NIC",
+        "PIPNameVM3": "landing-PIP",
+        "NSGName": "NSG",
+        "galleries_CENX_SIG_externalid": "/subscriptions/8b3b4b55-8760-464e-b1f6-841ffc802635/resourceGroups/SharedImageGalleryEastUS_RG/providers/Microsoft.Compute/galleries/SharedImageGalleryEastUS",
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('adminPasswordOrKey')]"
+                    }
+                ]
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-11-01",
+            "name": "[variables('NSGName')]",
+            "location":"[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "CENX_Ports",
+                        "properties": {
+                            "description": "8080 UI\n443 https\n9443 https for nifi\n22 for ssh\n9990 wildfly\n4040 spark\n8983 solr\n9042\n7777 old nifi\n8088 datomic console",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 310,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [
+                                "443",
+                                "9443",
+                                "22",
+                                "9990",
+                                "4040",
+                                "9042",
+                                "7777",
+                                "8088",
+                                "8983",
+                                "8881",
+                                "4009"
+                            ],
+                            "sourceAddressPrefixes": [
+                                "24.114.83.103",
+                                "70.53.103.157",
+                                "24.212.221.141",
+                                "192.75.88.130",
+                                "99.124.231.231",
+                                "49.207.55.97",
+                                "125.16.128.122",
+                                "106.206.60.3",
+                                "223.227.14.122",
+                                "27.59.56.22",
+                                "122.171.170.97",
+                                "106.206.114.211",
+                                "106.206.106.87",
+                                "106.206.121.45",
+                                "106.206.110.177",
+                                "27.59.91.157",
+                                "122.171.165.133",
+                                "67.84.31.160",
+                                "129.192.79.10",
+                                "198.84.220.184",
+                                "142.184.84.246",
+                                "142.118.109.170"
+                            ],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(),'-',variables('PIPNameVM1'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "PIPLoopVM1",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+           
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(),'-',variables('PIPNameVM2'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "PIPLoopVM2",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+           
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(),'-',variables('PIPNameVM3'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "PIPLoopVM3",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+           
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(),'-',variables('vNetName'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "VNetLoop",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.19.0/24"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.0.19.0/24",
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false,
+                "enableVmProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(variables('NSGName'), '/SSH')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+            ],
+            "properties": {
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 300,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(), '-',variables('vNetName'),'/default')]",
+            "copy": {
+                "name": "subnetLoop",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', concat('Env',copyindex(), '-',variables('vNetName')))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.0.19.0/24",
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "name": "[concat('Env',copyindex(),'-',variables('VMName1'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "VM1Loop",
+                "count": "[parameters('numberOfEnvironments')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', concat('Env',copyindex(),'-',variables('NICNameVM1')))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_E8_v3"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CenxUIvm1of2')]",
+                        "version": "0.0.1"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat('Env',copyindex(),'-',variables('VMName1'), '_OsDisk')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                        }
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[concat('Env',copyindex(),'-',variables('VMName1'))]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPasswordOrKey')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                    }
+            ,
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('Env',copyindex(),'-',variables('NICNameVM1')))]"
+                        }
+                    ]
+                }
+            }
+        } ,
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "name": "[concat('Env',copyindex(),'-',variables('VMName2'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "VM2Loop",
+                "count": "[parameters('numberOfEnvironments')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', concat('Env',copyindex(),'-',variables('NICNameVM2')))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_E8_v3"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CenxUIvm2of2')]"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat('Env',copyindex(),'-',variables('VMName2'), '_OsDisk')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                        }
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[concat('Env',copyindex(),'-',variables('VMName2'))]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPasswordOrKey')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('Env',copyindex(),'-',variables('NICNameVM2')))]"
+                        }
+                    ]
+                }
+            }
+        },
+         {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "name": "[concat('Env',copyindex(),'-',variables('VMName3'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "VM3Loop",
+                "count": "[parameters('numberOfEnvironments')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', concat('Env',copyindex(),'-',variables('NICNameVM3')))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B2s"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/LandingAdvInt_image')]"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat('Env',copyindex(),'-',variables('VMName3'), '_OsDisk')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                        }
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[concat('Env',copyindex(),'-',variables('VMName3'))]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPasswordOrKey')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('Env',copyindex(),'-',variables('NICNameVM3')))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(),'-',variables('NICNameVM1'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "nicLoopVM1",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM1')))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat('Env',copyindex(),'-',variables('vNetName')), 'default')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.19.4",
+                            "privateIPAllocationMethod": "Static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM1')))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat('Env',copyindex(),'-',variables('vNetName')), 'default')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(),'-',variables('NICNameVM2'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "nicLoopVM2",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM2')))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat('Env',copyindex(),'-',variables('vNetName')), 'default')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.19.5",
+                            "privateIPAllocationMethod": "Static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM2')))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat('Env',copyindex(),'-',variables('vNetName')), 'default')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('Env',copyindex(),'-',variables('NICNameVM3'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "nicLoopVM3",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM3')))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat('Env',copyindex(),'-',variables('vNetName')), 'default')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.19.6",
+                            "privateIPAllocationMethod": "Static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM3')))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat('Env',copyindex(),'-',variables('vNetName')), 'default')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+                }
+            }
+        },
+        {
+            "name": "[concat('microsoft.custom-script-linux-vm1-',copyindex())]",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
+            "copy": {
+                "name": "extensionLoop1",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "https://gallery.azure.com/artifact/20161101/microsoft.custom-script-linux-arm.2.0.56/Artifacts/MainTemplate.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[concat('Env',copyindex(),'-',variables('VMName1'))]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/MatsJ66/AzureDevTestTemplates/master/Scripts/script.sh"
+                        ]
+                    },
+                    "commandToExecute": {
+                        "value": "sh script.sh"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', 'Env',copyindex(),'-',variables('VMName1'))]"
+            ]
+        },
+        {
+            "name": "[concat('microsoft.custom-script-linux-vm2-',copyindex())]",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
+            "copy": {
+                "name": "extensionLoop1",
+                "count": "[parameters('numberOfEnvironments')]"
+            },
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "https://gallery.azure.com/artifact/20161101/microsoft.custom-script-linux-arm.2.0.56/Artifacts/MainTemplate.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[concat('Env',copyindex(),'-',variables('VMName2'))]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/MatsJ66/AzureDevTestTemplates/master/Scripts/script.sh"
+                        ]
+                    },
+                    "commandToExecute": {
+                        "value": "sh script.sh"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', 'Env',copyindex(),'-',variables('VMName2'))]"
+            ]
+        }    
+        ],
+    "outputs": {
+        "publicIPsVM1": {
+          "type": "array",
+          "copy": {
+            "count": "[parameters('numberOfEnvironments')]",
+            "input": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM1')))).ipAddress]"
+          }
+        },
+        "publicIPsVM2": {
+            "type": "array",
+            "copy": {
+              "count": "[parameters('numberOfEnvironments')]",
+              "input": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM2')))).ipAddress]"
+            }
+        },
+         "publicIPsVM3": {
+            "type": "array",
+            "copy": {
+              "count": "[parameters('numberOfEnvironments')]",
+              "input": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat('Env',copyindex(),'-',variables('PIPNameVM3')))).ipAddress]"
+            }
+        }       
+    }   
+}
