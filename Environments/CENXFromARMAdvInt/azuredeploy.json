@@ -76,23 +76,7 @@
             "location":"[parameters('location')]",
             "properties": {
                 "securityRules": [
-                    {
-                        "name": "SSH",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "22",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 300,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
+
                     {
                         "name": "CENX_Ports",
                         "properties": {
@@ -115,7 +99,12 @@
                                 "8088",
                                 "8983",
                                 "8881",
-                                "4009"
+                                "4009",
+                                "8080",
+                                "9700",
+                                "5900",
+                                "3389",
+                                "3350"
                             ],
                             "sourceAddressPrefixes": [
                                 "24.114.83.103",
@@ -139,7 +128,8 @@
                                 "129.192.79.10",
                                 "198.84.220.184",
                                 "142.184.84.246",
-                                "142.118.109.170"
+                                "142.118.109.170",
+                                "94.197.114.238"
                             ],
                             "destinationAddressPrefixes": []
                         }
@@ -296,7 +286,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CenxUIvm1of2')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/IntFun_tools')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
@@ -341,7 +331,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/CenxUIvm2of2')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/IntFun_system')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
