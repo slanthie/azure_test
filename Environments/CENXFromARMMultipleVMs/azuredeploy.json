@@ -74,23 +74,6 @@
             "properties": {
                 "securityRules": [
                     {
-                        "name": "SSH",
-                        "properties": {
-                            "protocol": "TCP",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "22",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 300,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
                         "name": "CENX_Ports",
                         "properties": {
                             "description": "8080 UI\n443 https\n9443 https for nifi\n22 for ssh\n9990 wildfly\n4040 spark\n8983 solr\n9042\n7777 old nifi\n8088 datomic console",
