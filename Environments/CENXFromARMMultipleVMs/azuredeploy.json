@@ -4,9 +4,9 @@
     "parameters": {
         "numberOfEnvironments": {
             "type": "int",
-            "defaultValue": 2,
+            "defaultValue": 1,
             "minValue": 1,
-            "maxValue": 5,
+            "maxValue": 8,
             "metadata": {
               "description": "Number of environments to deploy."
             }
@@ -31,6 +31,7 @@
         },
         "adminPasswordOrKey": {
             "type": "securestring",
+            "defaultValue": "Superuser123",
             "metadata": {
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
@@ -95,6 +96,7 @@
                                 "8088",
                                 "8983",
                                 "8881",
+                                "8080",
                                 "4009"
                             ],
                             "sourceAddressPrefixes": [
@@ -211,8 +213,8 @@
                 "destinationPortRange": "22",
                 "sourceAddressPrefix": "*",
                 "destinationAddressPrefix": "*",
-                "access": "Allow",
-                "priority": 300,
+                "access": "Deny",
+                "priority": 400,
                 "direction": "Inbound",
                 "sourcePortRanges": [],
                 "destinationPortRanges": [],
