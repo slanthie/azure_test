@@ -517,7 +517,7 @@
             "properties": {
                 "mode": "incremental",
                 "templateLink": {
-                    "uri": "https://gallery.azure.com/artifact/20161101/microsoft.custom-script-linux-arm.2.0.56/Artifacts/MainTemplate.json"
+                     "uri": "https://github.com/Azure/azure-linux-extensions/blob/master/ui-extension-packages/microsoft.custom-script-linux-arm/Artifacts/MainTemplate.json"
                 },
                 "parameters": {
                     "vmName": {
@@ -551,7 +551,7 @@
             "properties": {
                 "mode": "incremental",
                 "templateLink": {
-                    "uri": "https://gallery.azure.com/artifact/20161101/microsoft.custom-script-linux-arm.2.0.56/Artifacts/MainTemplate.json"
+                     "uri": "https://github.com/Azure/azure-linux-extensions/blob/master/ui-extension-packages/microsoft.custom-script-linux-arm/Artifacts/MainTemplate.json"
                 },
                 "parameters": {
                     "vmName": {
