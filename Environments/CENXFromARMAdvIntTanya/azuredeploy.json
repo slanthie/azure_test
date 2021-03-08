@@ -108,29 +108,8 @@
                                 "3350"
                             ],
                             "sourceAddressPrefixes": [
-                                "24.114.83.103",
-                                "70.53.103.157",
-                                "24.212.221.141",
-                                "192.75.88.130",
-                                "99.124.231.231",
-                                "49.207.55.97",
-                                "125.16.128.122",
-                                "106.206.60.3",
-                                "223.227.14.122",
-                                "27.59.56.22",
-                                "122.171.170.97",
-                                "106.206.114.211",
-                                "106.206.106.87",
-                                "106.206.121.45",
-                                "106.206.110.177",
-                                "27.59.91.157",
-                                "122.171.165.133",
-                                "67.84.31.160",
-                                "129.192.79.10",
-                                "198.84.220.184",
-                                "142.184.84.246",
-                                "142.118.109.170",
-                                "94.197.114.238"
+                                "148.252.129.75",
+                                "24.246.10.169"
                             ],
                             "destinationAddressPrefixes": []
                         }
@@ -265,7 +244,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/AdvInt_Tanya_Tools')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/IntFun_tools')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
@@ -310,7 +289,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/AdvInt_Tanya_System')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/IntFun_system')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
@@ -354,7 +333,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/AdvInt_Tanya_Landing')]"
+                        "id": "[concat(variables('galleries_CENX_SIG_externalid'), '/images/LandingAdvInt_image')]"
                     },
                     "osDisk": {
                         "osType": "Linux",
@@ -505,7 +484,75 @@
                     "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
                 }
             }
-        }
+        },
+        {
+            "name": "[concat('microsoft.custom-script-linux-vm1-',copyindex())]",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
+            "copy": {
+                "name": "extensionLoop1",
+                "count": "[parameters('numberOfEnvironments')]"
+              },
+            "properties": {
+                "mode": "incremental",
+                "templateLink": 
+                    "uri": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-customscript-extension-public-storage-on-ubuntu/azuredeploy.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[concat('Env',copyindex(),'-',variables('VMName1'))]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/MatsJ66/AzureDevTestTemplates/master/Scripts/script.sh"
+                        ]
+                    },
+                    "commandToExecute": {
+                        "value": "sh script.sh"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', 'Env',copyindex(),'-',variables('VMName1'))]"
+            ]
+        },
+        {
+            "name": "[concat('microsoft.custom-script-linux-vm2-',copyindex())]",
+            "apiVersion": "2015-01-01",
+            "type": "Microsoft.Resources/deployments",
+            "copy": {
+                "name": "extensionLoop1",
+                "count": "[parameters('numberOfEnvironments')]"
+            },
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-customscript-extension-public-storage-on-ubuntu/azuredeploy.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[concat('Env',copyindex(),'-',variables('VMName2'))]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/MatsJ66/AzureDevTestTemplates/master/Scripts/script.sh"
+                        ]
+                    },
+                    "commandToExecute": {
+                        "value": "sh script.sh"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', 'Env',copyindex(),'-',variables('VMName2'))]"
+            ]
+        }    
         ],
     "outputs": {
         "publicIPsVM1": {
