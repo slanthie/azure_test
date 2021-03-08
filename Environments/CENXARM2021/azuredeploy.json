@@ -484,53 +484,7 @@
                     "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
                 }
             }
-        },
-        {
-            "name": "[concat('microsoft.custom-script-linux-vm1-',copyindex())]",
-            "apiVersion": "2015-01-01",
-            "type": "Microsoft.Resources/deployments",
-            "copy": {
-                "name": "extensionLoop1",
-                "count": "[parameters('numberOfEnvironments')]"
-              },
-            "properties": {
-                "mode": "incremental",
-                "parameters": {
-                    "vmName": {
-                        "value": "[concat('Env',copyindex(),'-',variables('VMName1'))]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', 'Env',copyindex(),'-',variables('VMName1'))]"
-            ]
-        },
-        {
-            "name": "[concat('microsoft.custom-script-linux-vm2-',copyindex())]",
-            "apiVersion": "2015-01-01",
-            "type": "Microsoft.Resources/deployments",
-            "copy": {
-                "name": "extensionLoop1",
-                "count": "[parameters('numberOfEnvironments')]"
-            },
-            "properties": {
-                "mode": "incremental",
-                "parameters": {
-                    "vmName": {
-                        "value": "[concat('Env',copyindex(),'-',variables('VMName2'))]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', 'Env',copyindex(),'-',variables('VMName2'))]"
-            ]
-        }    
+        } 
         ],
     "outputs": {
         "publicIPsVM1": {
