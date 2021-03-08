@@ -495,7 +495,7 @@
               },
             "properties": {
                 "mode": "incremental",
-                "templateLink": 
+                "templateLink": {
                     "uri": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-customscript-extension-public-storage-on-ubuntu/azuredeploy.json"
                 },
                 "parameters": {
